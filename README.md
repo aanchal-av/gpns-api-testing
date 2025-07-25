@@ -12,12 +12,18 @@ This project is your launchpad for automated API testing using [Postman](https:/
 - **newman-report.html** – (Generated) Beautiful HTML reports of your API test runs.
 
 ---
-
+#Pre:
+This tets require gpns service to be running in local at port 3000.
+use this link to clone and run gpns service.
+```
+git clone https://github.com/as-ajitsingh/gpns/
+```
 ## Getting Started
 
 ### 1. Clone the repo
 
 ```sh
+
 git clone https://github.com/aanchal-av/gpns-api-testing.git
 cd gpns-api-testing
 ```
@@ -32,5 +38,5 @@ Then run:
 ```sh
 npm run test
 ```
-
+<img width="1043" height="657" alt="Screenshot 2025-07-25 154010" src="https://github.com/user-attachments/assets/5da25bfb-7d96-4c3d-8b8c-22c9111aa3d3" />
 ---
