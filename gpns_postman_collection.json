@@ -1,0 +1,1136 @@
+{
+	"info": {
+		"_postman_id": "9ad198da-8b05-4e7f-ad6b-50e2e29872a9",
+		"name": "Global Payroll Notification System (Practice Problem)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42519152"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has the required field 'access_token'\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object').that.has.property('access_token');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Access token is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.access_token).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Access token should not be empty\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response matches the expected schema\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData).to.have.property('access_token').that.is.a('string').and.is.not.empty;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\":\"Super Admin\",\n    \"password\":\"admin$$pass\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/auth/login",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create payroll entries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 201\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData).to.have.all.keys('id', 'createdAt', 'updatedAt', 'contractor', 'startDate', 'endDate', 'payoutDate', 'amount', 'currency', 'addedBy', 'comments');\r",
+							"    \r",
+							"    // Testing contractor object\r",
+							"    pm.expect(responseData.contractor).to.be.an('object');\r",
+							"    pm.expect(responseData.contractor).to.have.all.keys('id', 'createdAt', 'updatedAt', 'username', 'address', 'startDate', 'endDate', 'contractType', 'country');\r",
+							"    \r",
+							"    // Testing country object\r",
+							"    pm.expect(responseData.contractor.country).to.be.an('object');\r",
+							"    pm.expect(responseData.contractor.country).to.have.all.keys('id', 'createdAt', 'updatedAt', 'name', 'code');\r",
+							"    \r",
+							"    // Testing currency object\r",
+							"    pm.expect(responseData.currency).to.be.an('object');\r",
+							"    pm.expect(responseData.currency).to.have.all.keys('id', 'createdAt', 'updatedAt', 'name', 'code', 'symbol');\r",
+							"    \r",
+							"    // Testing addedBy object\r",
+							"    pm.expect(responseData.addedBy).to.be.an('object');\r",
+							"    pm.expect(responseData.addedBy).to.have.all.keys('id', 'createdAt', 'updatedAt', 'username', 'isActive');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response contains contractor object with required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.contractor).to.exist.and.to.be.an('object');\r",
+							"\r",
+							"    const contractor = responseData.contractor;\r",
+							"\r",
+							"    pm.expect(contractor).to.have.all.keys('id', 'createdAt', 'updatedAt', 'username', 'address', 'startDate', 'endDate', 'contractType', 'country');\r",
+							"    \r",
+							"    pm.expect(contractor.country).to.exist.and.to.be.an('object');\r",
+							"    pm.expect(contractor.country).to.have.all.keys('id', 'createdAt', 'updatedAt', 'name', 'code');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate the currency object and its required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.currency).to.exist.and.to.be.an('object');\r",
+							"    \r",
+							"    const currency = responseData.currency;\r",
+							"    pm.expect(currency).to.have.all.keys('id', 'createdAt', 'updatedAt', 'name', 'code', 'symbol');\r",
+							"    \r",
+							"    pm.expect(currency.id).to.be.a('string');\r",
+							"    pm.expect(currency.createdAt).to.be.a('string');\r",
+							"    pm.expect(currency.updatedAt).to.be.a('string');\r",
+							"    pm.expect(currency.name).to.be.a('string');\r",
+							"    pm.expect(currency.code).to.be.a('string');\r",
+							"    pm.expect(currency.symbol).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response content type is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate the presence of an 'id' that is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.id).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"ID should not be empty\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"StartDate and EndDate are in a valid date format\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    const isValidDate = (date) => {\r",
+							"        return !isNaN(Date.parse(date));\r",
+							"    };\r",
+							"\r",
+							"    pm.expect(isValidDate(responseData.startDate)).to.be.true;\r",
+							"    pm.expect(isValidDate(responseData.endDate)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"The comments field should be a string and can be empty\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.comments).to.exist.and.to.be.a('string');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/auth/login',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({\r",
+							"      \"username\": \"Super Admin\",\r",
+							"      \"password\": \"admin$$pass\"\r",
+							"    })\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Login request failed:\", err);\r",
+							"  } else {\r",
+							"    let json = res.json();\r",
+							"    \r",
+							"    let token =  json.access_token;\r",
+							"\r",
+							"    if (token) {\r",
+							"      pm.environment.set(\"admin_token\", token);\r",
+							"    } else {\r",
+							"      console.warn(\"Token not found in response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"contractorId\": \"ac841564-d75f-40d7-94a8-e85927ee5550\",\n    \"startDate\": \"2024-08-01\",\n    \"endDate\": \"2025-09-30\",\n    \"payoutDate\": \"2025-10-30\",\n    \"amount\": \"3000000\",\n    \"currencyCode\": \"USD\",\n    \"comments\": \"Salary\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/payroll-entry",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"payroll-entry"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all payroll entries",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response is an array with at least one element\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate the schema of each payroll entry object\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"    \r",
+							"    responseData.forEach(entry => {\r",
+							"        pm.expect(entry).to.be.an('object');\r",
+							"        pm.expect(entry).to.have.all.keys('id', 'createdAt', 'updatedAt', 'contractor', 'startDate', 'endDate', 'payoutDate', 'amount', 'addedBy', 'comments');\r",
+							"\r",
+							"        pm.expect(entry.contractor).to.be.an('object');\r",
+							"        pm.expect(entry.contractor).to.have.all.keys('id', 'createdAt', 'updatedAt', 'username', 'address', 'startDate', 'endDate', 'contractType', 'country');\r",
+							"        \r",
+							"        pm.expect(entry.contractor.country).to.be.an('object');\r",
+							"        pm.expect(entry.contractor.country).to.have.all.keys('id', 'createdAt', 'updatedAt', 'name', 'code');\r",
+							"\r",
+							"        pm.expect(entry.addedBy).to.be.an('object');\r",
+							"        pm.expect(entry.addedBy).to.have.all.keys('id', 'createdAt', 'updatedAt', 'username', 'isActive');\r",
+							"        \r",
+							"        pm.expect(entry.amount).to.be.a('number');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"The amount must be a non-negative number\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"    responseData.forEach(entry => {\r",
+							"        pm.expect(entry.amount).to.be.a('number').and.to.be.at.least(0, \"Amount should be non-negative\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Each payroll entry has a valid createdAt date format\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"\r",
+							"    responseData.forEach(entry => {\r",
+							"        pm.expect(entry).to.have.property('createdAt');\r",
+							"        pm.expect(entry.createdAt).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/, \"createdAt should be in ISO 8601 format\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Start date and end date must be valid dates and end date should be after start date\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    responseData.forEach(entry => {\r",
+							"        // Check if startDate is a valid date\r",
+							"        const startDate = new Date(entry.startDate);\r",
+							"        const endDate = new Date(entry.endDate);\r",
+							"        \r",
+							"        pm.expect(startDate.toString()).to.not.equal(\"Invalid Date\", \"Start date is not valid\");\r",
+							"        pm.expect(endDate.toString()).to.not.equal(\"Invalid Date\", \"End date is not valid\");\r",
+							"        \r",
+							"        // Check if endDate is after startDate\r",
+							"        pm.expect(endDate).to.be.above(startDate, \"End date should be after start date\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Comments field should be a string and can be empty\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array');\r",
+							"    responseData.forEach(entry => {\r",
+							"        pm.expect(entry.comments).to.exist.and.to.be.a('string');\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Each contractor's username is a non-empty string\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('array').that.is.not.empty;\r",
+							"    \r",
+							"    responseData.forEach(entry => {\r",
+							"        pm.expect(entry.contractor.username).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Username should not be empty\");\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/auth/login',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({\r",
+							"      \"username\": \"Super Admin\",\r",
+							"      \"password\": \"admin$$pass\"\r",
+							"    })\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Login request failed:\", err);\r",
+							"  } else {\r",
+							"    let json = res.json();\r",
+							"    \r",
+							"    let token =  json.access_token;\r",
+							"\r",
+							"    if (token) {\r",
+							"      pm.environment.set(\"admin_token\", token);\r",
+							"    } else {\r",
+							"      console.warn(\"Token not found in response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/payroll-entry/",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"payroll-entry",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get payroll entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response time is less than 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response matches the expected schema\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object').that.includes.all.keys('id', 'createdAt', 'updatedAt', 'contractor', 'startDate', 'endDate', 'payoutDate', 'amount', 'addedBy', 'comments');\r",
+							"    \r",
+							"    pm.expect(responseData.contractor).to.be.an('object').that.includes.all.keys('id', 'createdAt', 'updatedAt', 'username', 'address', 'startDate', 'endDate', 'contractType', 'country');\r",
+							"    \r",
+							"    pm.expect(responseData.contractor.country).to.be.an('object').that.includes.all.keys('id', 'createdAt', 'updatedAt', 'name', 'code');\r",
+							"    \r",
+							"    pm.expect(responseData.addedBy).to.be.an('object').that.includes.all.keys('id', 'createdAt', 'updatedAt', 'username', 'isActive');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Validate the contractor object has the required fields\", function () {\r",
+							"    pm.request.addHeader({key: 'Authorization',\r",
+							"    value: 'gccfhcf'});\r",
+							"    const responseData = pm.response.json();\r",
+							"   pm.expect(pm.response.code).to.equal(200);\r",
+							"   \r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/auth/login',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({\r",
+							"      \"username\": \"Super Admin\",\r",
+							"      \"password\": \"admin$$pass\"\r",
+							"    })\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Login request failed:\", err);\r",
+							"  } else {\r",
+							"    let json = res.json();\r",
+							"    \r",
+							"    let token =  json.access_token;\r",
+							"\r",
+							"    if (token) {\r",
+							"      pm.environment.set(\"admin_token\", token);\r",
+							"    } else {\r",
+							"      console.warn(\"Token not found in response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/payroll-entry/ee8746e3-b0fa-4002-b826-e779545099ad",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"payroll-entry",
+						"ee8746e3-b0fa-4002-b826-e779545099ad"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get payroll for invalid entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 404 for invalid entry\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is an object with required properties\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.be.an('object').that.has.property('error').that.is.a('string').and.is.not.empty;\r",
+							"    pm.expect(responseData).to.have.property('message').that.equals(\"Payroll entry not found for id: f13e1bc4-9356-4f25-a6fc-8a034c320f04\");\r",
+							"});\r",
+							"\r",
+							"// Validate error message for invalid entry\r",
+							"pm.test(\"Validate error status for invalid entry\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.have.property('error').that.equals(\"Not Found\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate error message for invalid entry\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.have.property('message').that.equals(\"Payroll entry not found for id: f13e1bc4-9356-4f25-a6fc-8a034c320f04\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/auth/login',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({\r",
+							"      \"username\": \"Super Admin\",\r",
+							"      \"password\": \"admin$$pass\"\r",
+							"    })\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Login request failed:\", err);\r",
+							"  } else {\r",
+							"    let json = res.json();\r",
+							"    \r",
+							"    let token =  json.access_token;\r",
+							"\r",
+							"    if (token) {\r",
+							"      pm.environment.set(\"admin_token\", token);\r",
+							"    } else {\r",
+							"      console.warn(\"Token not found in response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/payroll-entry/f13e1bc4-9356-4f25-a6fc-8a034c320f04",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"payroll-entry",
+						"f13e1bc4-9356-4f25-a6fc-8a034c320f04"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete payroll entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200 for successful deletion\", function () {\r",
+							"    pm.expect(pm.response.code).to.eql(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body contains an empty array for 'raw' attribute on successful deletion\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.raw).to.exist.and.to.be.an('array').that.is.empty;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is a valid JSON object on successful deletion\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response does not contain any unexpected properties\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData).to.have.all.keys('raw', 'affected');\r",
+							"    pm.expect(responseData.raw).to.be.an('array');\r",
+							"    pm.expect(responseData.affected).to.be.a('number');\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response status code is not 403 for forbidden access\", function () {\r",
+							"    pm.expect(pm.response.code).to.not.eql(403);\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/auth/login',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({\r",
+							"      \"username\": \"Super Admin\",\r",
+							"      \"password\": \"admin$$pass\"\r",
+							"    })\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Login request failed:\", err);\r",
+							"  } else {\r",
+							"    let json = res.json();\r",
+							"    \r",
+							"    let token =  json.access_token;\r",
+							"\r",
+							"    if (token) {\r",
+							"      pm.environment.set(\"admin_token\", token);\r",
+							"    } else {\r",
+							"      console.warn(\"Token not found in response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							"\r",
+							"const newPayroll = {\r",
+							"  contractorId: \"ac841564-d75f-40d7-94a8-e85927ee5550\",\r",
+							"  startDate: \"2024-08-01\",\r",
+							"  endDate: \"2025-09-30\",\r",
+							"  payoutDate: \"2025-10-30\",\r",
+							"  amount: \"3000000\",\r",
+							"  currencyCode: \"USD\",\r",
+							"  comments: \"Salary\"\r",
+							"};\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/payroll-entry',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json',\r",
+							"    'Authorization': 'Bearer ' + pm.environment.get(\"admin_token\")\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify(newPayroll)\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Failed to create payroll entry:\", err);\r",
+							"  } else {\r",
+							"    const resData = res.json();\r",
+							"    if (resData.id) {\r",
+							"      pm.environment.set(\"payrollEntryId\", resData.id);\r",
+							"      console.log(\"New payroll entry created with ID:\", resData.id);\r",
+							"    } else {\r",
+							"      console.warn(\"No ID found in create response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "payroll-id",
+						"value": "{{payrollEntryId}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/payroll-entry/{{payrollEntryId}}",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"payroll-entry",
+						"{{payrollEntryId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete payroll invalid entry",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/auth/login',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({\r",
+							"      \"username\": \"Super Admin\",\r",
+							"      \"password\": \"admin$$pass\"\r",
+							"    })\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Login request failed:\", err);\r",
+							"  } else {\r",
+							"    let json = res.json();\r",
+							"    \r",
+							"    let token =  json.access_token;\r",
+							"\r",
+							"    if (token) {\r",
+							"      pm.environment.set(\"admin_token\", token);\r",
+							"    } else {\r",
+							"      console.warn(\"Token not found in response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 404 for invalid entry\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is an object with required properties\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.be.an('object').that.has.property('error').that.is.a('string').and.is.not.empty;\r",
+							"    pm.expect(responseData).to.have.property('message').that.equals(\"Payroll entry not found for id: f964f80e-00e3-4eac-9264-4d98bbd9fa5f\");\r",
+							"});\r",
+							"\r",
+							"// Validate error message for invalid entry\r",
+							"pm.test(\"Validate error status for invalid entry\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.have.property('error').that.equals(\"Not Found\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate error message for invalid entry\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.have.property('message').that.equals(\"Payroll entry not found for id: f964f80e-00e3-4eac-9264-4d98bbd9fa5f\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/payroll-entry/f964f80e-00e3-4eac-9264-4d98bbd9fa5f",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"payroll-entry",
+						"f964f80e-00e3-4eac-9264-4d98bbd9fa5f"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update payroll entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate that the country object within contractor has required fields\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData.contractor).to.exist.and.to.be.an('object');\r",
+							"    pm.expect(responseData.contractor.country).to.exist.and.to.be.an('object');\r",
+							"    \r",
+							"    const country = responseData.contractor.country;\r",
+							"    pm.expect(country).to.have.all.keys('id', 'createdAt', 'updatedAt', 'name', 'code');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/auth/login',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({\r",
+							"      \"username\": \"Super Admin\",\r",
+							"      \"password\": \"admin$$pass\"\r",
+							"    })\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Login request failed:\", err);\r",
+							"  } else {\r",
+							"    let json = res.json();\r",
+							"    \r",
+							"    let token =  json.access_token;\r",
+							"\r",
+							"    if (token) {\r",
+							"      pm.environment.set(\"admin_token\", token);\r",
+							"    } else {\r",
+							"      console.warn(\"Token not found in response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"startDate\": \"2025-08-01\",\n    \"endDate\": \"2025-08-31\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/payroll-entry/ee8746e3-b0fa-4002-b826-e779545099ad",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"payroll-entry",
+						"ee8746e3-b0fa-4002-b826-e779545099ad"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update payroll for invalid entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 404 for invalid entry\", function () {\r",
+							"    pm.expect(pm.response.code).to.equal(404);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is an object with required properties\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.be.an('object').that.has.property('error').that.is.a('string').and.is.not.empty;\r",
+							"    pm.expect(responseData).to.have.property('message').that.equals(\"Payroll entry not found for id: f13e1bc4-9356-4f25-a6fc-8a034c320f04\");\r",
+							"});\r",
+							"\r",
+							"// Validate error message for invalid entry\r",
+							"pm.test(\"Validate error status for invalid entry\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.have.property('error').that.equals(\"Not Found\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate error message for invalid entry\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"    pm.expect(responseData).to.have.property('message').that.equals(\"Payroll entry not found for id: f13e1bc4-9356-4f25-a6fc-8a034c320f04\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.sendRequest({\r",
+							"  url: 'http://localhost:3000/auth/login',\r",
+							"  method: 'POST',\r",
+							"  header: {\r",
+							"    'Content-Type': 'application/json'\r",
+							"  },\r",
+							"  body: {\r",
+							"    mode: 'raw',\r",
+							"    raw: JSON.stringify({\r",
+							"      \"username\": \"Super Admin\",\r",
+							"      \"password\": \"admin$$pass\"\r",
+							"    })\r",
+							"  }\r",
+							"}, function (err, res) {\r",
+							"  if (err) {\r",
+							"    console.error(\"Login request failed:\", err);\r",
+							"  } else {\r",
+							"    let json = res.json();\r",
+							"    \r",
+							"    let token =  json.access_token;\r",
+							"\r",
+							"    if (token) {\r",
+							"      pm.environment.set(\"admin_token\", token);\r",
+							"    } else {\r",
+							"      console.warn(\"Token not found in response\");\r",
+							"    }\r",
+							"  }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{admin_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"startDate\": \"2025-08-01\",\n    \"endDate\": \"2025-08-31\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/payroll-entry/f13e1bc4-9356-4f25-a6fc-8a034c320f04",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"payroll-entry",
+						"f13e1bc4-9356-4f25-a6fc-8a034c320f04"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "health",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-correlation-id",
+						"value": "sample-cor-id",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "localhost:3000/health",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

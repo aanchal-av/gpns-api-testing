@@ -1,0 +1,21 @@
+{
+  "name": "gpns-api-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "newman run gpns_postman_collection.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aanchal-av/gpns-api-testing.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aanchal-av/gpns-api-testing/issues"
+  },
+  "homepage": "https://github.com/aanchal-av/gpns-api-testing#readme"
+}
